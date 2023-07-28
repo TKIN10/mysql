@@ -20,7 +20,7 @@ SELECT life_expectancy FROM countries WHERE life_expectancy < 76 AND life_expect
 
 -- 問6
 -- 国コードがNLB,ALB,DZAのもの市区町村をすべて抽出してください。
-SELECT code FROM countries WHERE code = NLB && code = ALB && code = DZA;
+SELECT * FROM cities WHERE country_code IN('NLB','ALB','DZA');
 
 -- 問7
 -- 独立独立記念日がない国をすべて抽出してください。
@@ -48,11 +48,11 @@ SELECT indep_year,population FROM countries WHERE indep_year > 1990 or populatio
 
 -- 問13
 -- コードがDZAもしくはALBかつ独立記念日が1990年より前の国を全て抽出してください。
-SELECT code,indep_year FROM countries WHERE code = ALB AND indep_year > 1990;
+SELECT * FROM countries WHERE code IN('DZA','ALB')AND indep_year < 1990;
 
 -- 問14
 -- 全ての地方をグループ化せずに表示してください。
-SELECT region FROM countries;
+SELECT DISTINCT region FROM countries;
 
 -- 問15
 -- 国名と人口を以下のように表示させてください。シングルクォートに注意してください。
@@ -69,8 +69,7 @@ SELECT life_expectancy FROM countries WHERE life_expectancy IS NOT NULL ORDER BY
 
 -- 問18
 -- 平均寿命が長い順、独立記念日が新しい順に国を表示させてください。
-SELECT life_expectancy FROM countries WHERE life_expectancy ORDER BY life_expectancy DESC;
-SELECT indep_year FROM countries WHERE indep_year ORDER BY indep_year DESC;
+SELECT countries.name,countries.life_expectancy,countries.indep_year FROM countries ORDER BY life_expectancy DESC,indep_year;
 
 -- 問19
 -- 全ての国の国コードの一文字目と国名を表示させてください。
@@ -90,7 +89,7 @@ SELECT region, MAX(life_expectancy), MAX(population) from countries group by reg
 
 -- 問23
 -- アジア大陸の中で最小の表面積を表示してください
-SELECT MIN(surface_area) FROM countries WHERE continent = 'Asia' IS NOT NULL;
+SELECT MIN(surface_area) FROM countries WHERE continent = 'Asia';
 
 -- 問24
 -- アジア大陸の表面積の合計を表示してください。
@@ -98,11 +97,14 @@ SELECT SUM(surface_area) FROM countries WHERE continent = 'Asia';
 
 -- 問25
 -- 全ての国と言語を表示してください。一つの国に複数言語があると思いますので同じ国名を言語数だけ出力してください。
-SELECT countries.name, countrylanguages.language FROM countries JOIN countrylanguages;
+SELECT countries.name, countrylanguages.language FROM countries 
+JOIN countrylanguages ON countries.code = countrylanguages.country_code;
 
 -- 問26
 -- 全ての国と言語と市区町村を表示してください。
-SELECT countries.name,cities.district, countrylanguages.language FROM countries JOIN cities,countrylanguages;
+SELECT countries.name,cities.district, countrylanguages.language FROM countries 
+JOIN cities ON cities.country_code = countries.code 
+JOIN countrylanguages ON countrylanguages.country_code = countries.code;
 
 -- 問27
 -- 全ての有名人を出力してください。左側外部結合を使用して国名なし（country_codeがNULL）も表示してください。
